@@ -5,7 +5,7 @@
  */
 (function() {
     if (!localStorage.attendance) {
-        console.log('Creating attendance records...');
+
         function getRandom() {
             return (Math.random() >= 0.5);
         }
@@ -29,26 +29,48 @@
 
 /* STUDENT APPLICATION */
 $(function() {
-    var attendance = JSON.parse(localStorage.attendance),
+
+    var attendance = JSON.parse(localStorage.attendance);
+    console.log(attendance);
+
+        // attendance = {
+        //     studentName: [true,false,...]
+        // };
+
+
+
         $allMissed = $('tbody .missed-col'),
         $allCheckboxes = $('tbody input');
 
     // Count a student's missed days
     function countMissing() {
-        $allMissed.each(function() {
-            var studentRow = $(this).parent('tr'),
-                dayChecks = $(studentRow).children('td').children('input'),
-                numMissed = 0;
 
-            dayChecks.each(function() {
-                if (!$(this).prop('checked')) {
+        //use the model not the view to count the missing
+        for (var key in attendance){
+            debugger
+            let dayAttendance = attendance[key];
+            // var studentRow = $(this).parent('tr'),
+            //     dayChecks = $(studentRow).children('td').children('input'),
+            let numMissed = 0;
+
+            dayAttendance.forEach(function(day) {
+                if (day===false) {
                     numMissed++;
                 }
             });
 
-            $(this).text(numMissed);
-        });
+            dayAttendance.push[numMissed];
+        };
+
     }
+
+
+    var controller = {
+
+        setAttendance: function(newAttendance){
+            localStorage.attendance = JSON.stringify(newAttendance);
+        }
+    };
 
     // Check boxes, based on attendace records
     $.each(attendance, function(name, days) {
@@ -65,6 +87,7 @@ $(function() {
         var studentRows = $('tbody .student'),
             newAttendance = {};
 
+
         studentRows.each(function() {
             var name = $(this).children('.name-col').text(),
                 $allCheckboxes = $(this).children('td').children('input');
@@ -76,8 +99,9 @@ $(function() {
             });
         });
 
+        controller.setAttendance(newAttendance);
         countMissing();
-        localStorage.attendance = JSON.stringify(newAttendance);
+        
     });
 
     countMissing();
